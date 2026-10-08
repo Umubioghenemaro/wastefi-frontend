@@ -4,13 +4,14 @@ import { useState, useMemo } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
-import { Card, CardContent, Button, PullToRefresh } from "@/components/ui";
+import { Card, CardContent, Button, Pagination } from "@/components/ui";
 import {
   CollectionCard,
   CollectionFilter,
   CollectionDetail,
 } from "@/components/collections";
 import { Package, ArrowUpDown } from "lucide-react";
+import { usePagination } from "@/hooks/usePagination";
 import type { WasteSubmission, CollectionStatus, MaterialType } from "@/types/api";
 
 /**
@@ -138,6 +139,19 @@ export default function CollectionsPage() {
     return sorted;
   }, [selectedStatuses, selectedMaterials, sortBy]);
 
+  // Pagination
+  const {
+    currentPage,
+    pageSize,
+    paginatedItems,
+    totalItems,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePagination(filteredAndSortedCollections, {
+    initialPageSize: 10,
+    persistInUrl: true,
+  });
+
   // Calculate stats
   const stats = useMemo(() => {
     return {
@@ -205,8 +219,8 @@ export default function CollectionsPage() {
         {/* Sort */}
         <div className="flex items-center justify-between">
           <p className="text-sm text-[var(--muted-foreground)]">
-            {filteredAndSortedCollections.length} collection
-            {filteredAndSortedCollections.length !== 1 ? "s" : ""}
+            {totalItems} collection
+            {totalItems !== 1 ? "s" : ""}
           </p>
           <div className="flex items-center gap-2">
             <ArrowUpDown className="w-4 h-4 text-[var(--muted-foreground)]" />
@@ -225,16 +239,28 @@ export default function CollectionsPage() {
         </div>
 
         {/* Collections List */}
-        {filteredAndSortedCollections.length > 0 ? (
-          <div className="space-y-3">
-            {filteredAndSortedCollections.map((collection) => (
-              <CollectionCard
-                key={collection.id}
-                collection={collection}
-                onClick={() => setSelectedCollection(collection)}
-              />
-            ))}
-          </div>
+        {paginatedItems.length > 0 ? (
+          <>
+            <div className="space-y-3">
+              {paginatedItems.map((collection) => (
+                <CollectionCard
+                  key={collection.id}
+                  collection={collection}
+                  onClick={() => setSelectedCollection(collection)}
+                />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalItems={totalItems}
+              pageSize={pageSize}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+              pageSizeOptions={[10, 25, 50]}
+            />
+          </>
         ) : (
           <Card>
             <CardContent className="p-8 text-center">

@@ -4,11 +4,12 @@ import { useState } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
+import { Pagination } from "@/components/ui";
 import { WalletBalanceCard } from "@/components/wallet/WalletBalanceCard";
 import { TransactionList } from "@/components/wallet/TransactionList";
 import { TransactionFilter, TransactionFilterType } from "@/components/wallet/TransactionFilter";
 import { CashoutModal } from "@/components/wallet/CashoutModal";
-import { PullToRefresh } from "@/components/ui";
+import { usePagination } from "@/hooks/usePagination";
 import type { Transaction } from "@/types/api";
 
 /**
@@ -92,12 +93,18 @@ export default function WalletPage() {
     return txn.type === activeFilter;
   });
 
-  const handleRefresh = async () => {
-    // Simulate data fetching
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setLastRefresh(new Date());
-    // In production, refetch wallet data and transactions
-  };
+  // Pagination
+  const {
+    currentPage,
+    pageSize,
+    paginatedItems,
+    totalItems,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePagination(filteredTransactions, {
+    initialPageSize: 10,
+    persistInUrl: true,
+  });
 
   return (
     <>
@@ -131,7 +138,16 @@ export default function WalletPage() {
         </Section>
 
         <Section spacing="sm">
-          <TransactionList transactions={filteredTransactions} />
+          <TransactionList transactions={paginatedItems} />
+          
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            pageSizeOptions={[10, 25, 50]}
+          />
         </Section>
       </Container>
       </PullToRefresh>
