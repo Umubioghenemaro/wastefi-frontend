@@ -38,6 +38,12 @@ export default function CollectorDashboardPage() {
     return <DashboardSkeleton />;
   }
 
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
   return (
     <div className="animate-fade-in">
       <Container>

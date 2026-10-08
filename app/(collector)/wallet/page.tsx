@@ -76,6 +76,7 @@ const mockTransactions: Transaction[] = [
 ];
 
 export default function WalletPage() {
+  const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<TransactionFilterType>("all");
   const [isCashoutModalOpen, setIsCashoutModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -88,6 +89,19 @@ export default function WalletPage() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    // Simulate data fetching
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <WalletSkeleton />;
+  }
 
   // Mock wallet data
   const walletData = {

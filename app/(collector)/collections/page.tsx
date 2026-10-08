@@ -94,6 +94,7 @@ const mockCollections: WasteSubmission[] = [
 type SortOption = "newest" | "oldest" | "highest" | "lowest";
 
 export default function CollectionsPage() {
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedStatuses, setSelectedStatuses] = useState<CollectionStatus[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<MaterialType[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
@@ -108,6 +109,19 @@ export default function CollectionsPage() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    // Simulate data fetching
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <CollectionsSkeleton />;
+  }
 
   // Filter and sort collections
   const filteredAndSortedCollections = useMemo(() => {

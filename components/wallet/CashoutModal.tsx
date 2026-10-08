@@ -8,6 +8,7 @@ import { Button, Card, Badge } from "@/components/ui";
 import { useToast } from "@/lib/hooks/useToast";
 import { X, Smartphone, Wallet, Building2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { useToast } from "@/lib/hooks/useToast";
 
 /**
  * Cashout Modal
