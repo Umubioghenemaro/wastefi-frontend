@@ -7,3 +7,4 @@ export { ProfileHeader } from "./ProfileHeader";
 export { ProfileStats } from "./ProfileStats";
 export { EditProfileModal } from "./EditProfileModal";
 export { AccountActions } from "./AccountActions";
+export { QRCodeCard } from "./QRCodeCard";
