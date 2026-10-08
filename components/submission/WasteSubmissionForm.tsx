@@ -11,8 +11,8 @@ import { CameraCapture } from "./CameraCapture";
 import { Camera, MapPin, Scale, DollarSign } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useOnlineStatus } from "@/lib/hooks/useOfflineStorage";
+import { useToast } from "@/lib/hooks/useToast";
 import { savePendingSubmission, addToSyncQueue } from "@/lib/db/storage";
-import { useUIStore } from "@/store/uiStore";
 import type { MaterialType } from "@/types/api";
 
 /**
@@ -36,7 +36,7 @@ export function WasteSubmissionForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const isOnline = useOnlineStatus();
-  const addToast = useUIStore((state) => state.addToast);
+  const toast = useToast();
 
   const {
     register,
@@ -109,16 +109,22 @@ export function WasteSubmissionForm() {
 
       // Show success message
       if (isOnline) {
-        addToast("Submission saved! Syncing now...", "success");
+        toast.success("Your collection has been submitted successfully!", {
+          title: "Submission Complete"
+        });
       } else {
-        addToast("Saved offline. Will sync when online.", "info");
+        toast.info("Saved offline. Will sync automatically when you're back online.", {
+          title: "Saved Offline"
+        });
       }
 
       // Navigate to dashboard
       router.push("/dashboard");
     } catch (error) {
       console.error("Submission error:", error);
-      addToast("Failed to save submission. Please try again.", "error");
+      toast.error("Unable to save your submission. Please try again.", {
+        title: "Submission Failed"
+      });
     } finally {
       setIsSubmitting(false);
     }
