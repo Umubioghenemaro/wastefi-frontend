@@ -99,14 +99,16 @@ export default function CollectionsPage() {
   const [selectedMaterials, setSelectedMaterials] = useState<MaterialType[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [selectedCollection, setSelectedCollection] = useState<WasteSubmission | null>(null);
-  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleRefresh = async () => {
-    // Simulate data fetching
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setLastRefresh(new Date());
-    // In production, refetch collections data
-  };
+  // Simulate data loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     // Simulate data fetching
@@ -184,8 +186,12 @@ export default function CollectionsPage() {
     { value: "lowest", label: "Lowest Value" },
   ];
 
+  if (isLoading) {
+    return <CollectionsSkeleton />;
+  }
+
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
+    <div className="animate-fade-in">
       <Container>
       <Section>
         <PageHeader
@@ -293,15 +299,16 @@ export default function CollectionsPage() {
           </Card>
         )}
       </Section>
-
-      {/* Collection Detail Modal */}
+      </Container>
+    </div>
+  );
+}
       {selectedCollection && (
         <CollectionDetail
           collection={selectedCollection}
           onClose={() => setSelectedCollection(null)}
         />
       )}
-    </Container>
-    </PullToRefresh>
+    </div>
   );
 }

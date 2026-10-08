@@ -176,12 +176,14 @@ body {
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
+@keyframes slide-out-right {
+  from {
+    transform: translateX(0);
+    opacity: 1;
   }
-  100% {
-    background-position: 1000px 0;
+  to {
+    transform: translateX(100%);
+    opacity: 0;
   }
 }
 
@@ -193,13 +195,6 @@ body {
   animation: slide-up 0.3s ease-out;
 }
 
-.animate-shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--muted) 0%,
-    var(--accent) 50%,
-    var(--muted) 100%
-  );
-  background-size: 2000px 100%;
-  animation: shimmer 2s infinite linear;
+.animate-slide-out-right {
+  animation: slide-out-right 0.2s ease-out forwards;
 }

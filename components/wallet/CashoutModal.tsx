@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button, Card, Badge, FormError } from "@/components/ui";
+import { Button, Card, Badge } from "@/components/ui";
+import { useToast } from "@/lib/hooks/useToast";
 import { X, Smartphone, Wallet, Building2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useToast } from "@/lib/hooks/useToast";
@@ -71,15 +72,16 @@ export function CashoutModal({
       console.log("Cashout request:", data);
       
       toast.success(
-        `Cashout of ${formatCurrency(data.amount)} has been initiated. You'll receive funds shortly.`,
-        "Cashout Successful"
+        `${formatCurrency(data.amount)} has been sent to your ${data.method === "mobile_money" ? "mobile money" : data.method === "stellar" ? "Stellar wallet" : "bank account"}.`,
+        { title: "Cash Out Successful" }
       );
       
-      setIsLoading(false);
       onClose();
     } catch (error) {
-      console.error("Cashout error:", error);
-      toast.error("Failed to process cashout. Please try again.", "Cashout Failed");
+      toast.error("Unable to process your cash out request. Please try again.", {
+        title: "Cash Out Failed"
+      });
+    } finally {
       setIsLoading(false);
     }
   };

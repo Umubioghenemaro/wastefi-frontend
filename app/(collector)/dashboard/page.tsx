@@ -25,8 +25,8 @@ import { Leaf, TrendingUp, Recycle, Plus } from "lucide-react";
 export default function CollectorDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
 
+  // Simulate data loading
   useEffect(() => {
-    // Simulate data fetching
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1500);
@@ -37,11 +37,18 @@ export default function CollectorDashboardPage() {
   if (isLoading) {
     return <DashboardSkeleton />;
   }
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
+    <div className="animate-fade-in">
       <Container>
-      <Section>
-        <PageHeader
+        <Section>
+          <PageHeader
           title="Dashboard"
           description="Track your collections and earnings"
           actions={
@@ -160,7 +167,7 @@ export default function CollectorDashboardPage() {
           <Plus className="w-6 h-6" />
         </Button>
       </div>
-    </Container>
-    </PullToRefresh>
+      </Container>
+    </div>
   );
 }
