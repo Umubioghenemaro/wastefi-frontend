@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
@@ -10,6 +10,7 @@ import {
   CollectionFilter,
   CollectionDetail,
 } from "@/components/collections";
+import { CollectionsSkeleton } from "@/components/skeletons";
 import { Package, ArrowUpDown } from "lucide-react";
 import type { WasteSubmission, CollectionStatus, MaterialType } from "@/types/api";
 
@@ -92,10 +93,24 @@ const mockCollections: WasteSubmission[] = [
 type SortOption = "newest" | "oldest" | "highest" | "lowest";
 
 export default function CollectionsPage() {
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedStatuses, setSelectedStatuses] = useState<CollectionStatus[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<MaterialType[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [selectedCollection, setSelectedCollection] = useState<WasteSubmission | null>(null);
+
+  useEffect(() => {
+    // Simulate data fetching
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <CollectionsSkeleton />;
+  }
 
   // Filter and sort collections
   const filteredAndSortedCollections = useMemo(() => {

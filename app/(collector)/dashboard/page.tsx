@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
@@ -10,6 +13,7 @@ import {
   Badge,
   Button,
 } from "@/components/ui";
+import { DashboardSkeleton } from "@/components/skeletons";
 import { Leaf, TrendingUp, Recycle, Plus } from "lucide-react";
 
 /**
@@ -18,6 +22,20 @@ import { Leaf, TrendingUp, Recycle, Plus } from "lucide-react";
  */
 
 export default function CollectorDashboardPage() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate data fetching
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
   return (
     <Container>
       <Section>

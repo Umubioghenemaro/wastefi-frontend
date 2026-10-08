@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
@@ -8,6 +8,7 @@ import { WalletBalanceCard } from "@/components/wallet/WalletBalanceCard";
 import { TransactionList } from "@/components/wallet/TransactionList";
 import { TransactionFilter, TransactionFilterType } from "@/components/wallet/TransactionFilter";
 import { CashoutModal } from "@/components/wallet/CashoutModal";
+import { WalletSkeleton } from "@/components/skeletons";
 import type { Transaction } from "@/types/api";
 
 /**
@@ -74,8 +75,22 @@ const mockTransactions: Transaction[] = [
 ];
 
 export default function WalletPage() {
+  const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<TransactionFilterType>("all");
   const [isCashoutModalOpen, setIsCashoutModalOpen] = useState(false);
+
+  useEffect(() => {
+    // Simulate data fetching
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <WalletSkeleton />;
+  }
 
   // Mock wallet data
   const walletData = {
