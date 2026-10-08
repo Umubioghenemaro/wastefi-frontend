@@ -13,7 +13,7 @@ import {
   QRCodeCard,
 } from "@/components/profile";
 import { useAuthStore } from "@/store/authStore";
-import { useUIStore } from "@/store/uiStore";
+import { useToast } from "@/lib/hooks/useToast";
 import { useRouter } from "next/navigation";
 import type { User } from "@/types/api";
 
@@ -26,7 +26,7 @@ export default function ProfilePage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
-  const addToast = useUIStore((state) => state.addToast);
+  const toast = useToast();
 
   // Mock user data - Replace with real data from auth store
   const mockUser: User = {
@@ -48,19 +48,28 @@ export default function ProfilePage() {
   };
 
   const handleSaveProfile = async (data: { name: string; email?: string; phone: string }) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Saving profile:", data);
-    addToast("Profile updated successfully", "success");
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log("Saving profile:", data);
+      toast.success("Your profile has been updated successfully!", {
+        title: "Profile Updated"
+      });
+      setIsEditModalOpen(false);
+    } catch (error) {
+      toast.error("Unable to update your profile. Please try again.", {
+        title: "Update Failed"
+      });
+    }
   };
 
   const handleAvatarChange = () => {
-    addToast("Avatar upload coming soon", "info");
+    toast.info("Avatar upload feature is coming soon!");
   };
 
   const handleLogout = () => {
     logout();
-    addToast("Logged out successfully", "success");
+    toast.success("You have been logged out successfully.");
     router.push("/login");
   };
 

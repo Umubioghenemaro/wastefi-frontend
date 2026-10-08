@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
@@ -14,6 +14,7 @@ import {
   Button,
   PullToRefresh,
 } from "@/components/ui";
+import { DashboardSkeleton } from "@/components/skeletons";
 import { Leaf, TrendingUp, Recycle, Plus } from "lucide-react";
 
 /**
@@ -22,20 +23,32 @@ import { Leaf, TrendingUp, Recycle, Plus } from "lucide-react";
  */
 
 export default function CollectorDashboardPage() {
-  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleRefresh = async () => {
-    // Simulate data fetching
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setLastRefresh(new Date());
-    // In production, trigger actual data refetch here
-  };
+  // Simulate data loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
 
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
+    <div className="animate-fade-in">
       <Container>
-      <Section>
-        <PageHeader
+        <Section>
+          <PageHeader
           title="Dashboard"
           description="Track your collections and earnings"
           actions={
@@ -154,7 +167,7 @@ export default function CollectorDashboardPage() {
           <Plus className="w-6 h-6" />
         </Button>
       </div>
-    </Container>
-    </PullToRefresh>
+      </Container>
+    </div>
   );
 }

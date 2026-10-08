@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
@@ -9,7 +9,7 @@ import { WalletBalanceCard } from "@/components/wallet/WalletBalanceCard";
 import { TransactionList } from "@/components/wallet/TransactionList";
 import { TransactionFilter, TransactionFilterType } from "@/components/wallet/TransactionFilter";
 import { CashoutModal } from "@/components/wallet/CashoutModal";
-import { usePagination } from "@/hooks/usePagination";
+import { WalletSkeleton } from "@/components/skeletons";
 import type { Transaction } from "@/types/api";
 
 /**
@@ -76,9 +76,32 @@ const mockTransactions: Transaction[] = [
 ];
 
 export default function WalletPage() {
+  const [isLoading, setIsLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<TransactionFilterType>("all");
   const [isCashoutModalOpen, setIsCashoutModalOpen] = useState(false);
-  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate data loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Simulate data fetching
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <WalletSkeleton />;
+  }
 
   // Mock wallet data
   const walletData = {
@@ -93,22 +116,13 @@ export default function WalletPage() {
     return txn.type === activeFilter;
   });
 
-  // Pagination
-  const {
-    currentPage,
-    pageSize,
-    paginatedItems,
-    totalItems,
-    handlePageChange,
-    handlePageSizeChange,
-  } = usePagination(filteredTransactions, {
-    initialPageSize: 10,
-    persistInUrl: true,
-  });
+  if (isLoading) {
+    return <WalletSkeleton />;
+  }
 
   return (
     <>
-      <PullToRefresh onRefresh={handleRefresh}>
+      <div className="animate-fade-in">
         <Container>
         <Section>
           <PageHeader
@@ -150,7 +164,7 @@ export default function WalletPage() {
           />
         </Section>
       </Container>
-      </PullToRefresh>
+      </div>
 
       {/* Cashout Modal */}
       <CashoutModal

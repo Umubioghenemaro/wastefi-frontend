@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button, Card, Badge, FormError } from "@/components/ui";
+import { Button, Card, Badge } from "@/components/ui";
+import { useToast } from "@/lib/hooks/useToast";
 import { X, Smartphone, Wallet, Building2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { useToast } from "@/lib/hooks/useToast";
 
 /**
  * Cashout Modal
@@ -43,6 +45,7 @@ export function CashoutModal({
 }: CashoutModalProps) {
   const [selectedMethod, setSelectedMethod] = useState<"mobile_money" | "stellar" | "bank">("mobile_money");
   const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
 
   const {
     register,
@@ -62,12 +65,25 @@ export function CashoutModal({
   const onSubmit = async (data: CashoutFormData) => {
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    console.log("Cashout request:", data);
-    setIsLoading(false);
-    onClose();
+      console.log("Cashout request:", data);
+      
+      toast.success(
+        `${formatCurrency(data.amount)} has been sent to your ${data.method === "mobile_money" ? "mobile money" : data.method === "stellar" ? "Stellar wallet" : "bank account"}.`,
+        { title: "Cash Out Successful" }
+      );
+      
+      onClose();
+    } catch (error) {
+      toast.error("Unable to process your cash out request. Please try again.", {
+        title: "Cash Out Failed"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isOpen) return null;
