@@ -4,10 +4,12 @@ import { useState } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
+import { Pagination } from "@/components/ui";
 import { WalletBalanceCard } from "@/components/wallet/WalletBalanceCard";
 import { TransactionList } from "@/components/wallet/TransactionList";
 import { TransactionFilter, TransactionFilterType } from "@/components/wallet/TransactionFilter";
 import { CashoutModal } from "@/components/wallet/CashoutModal";
+import { usePagination } from "@/hooks/usePagination";
 import type { Transaction } from "@/types/api";
 
 /**
@@ -76,6 +78,7 @@ const mockTransactions: Transaction[] = [
 export default function WalletPage() {
   const [activeFilter, setActiveFilter] = useState<TransactionFilterType>("all");
   const [isCashoutModalOpen, setIsCashoutModalOpen] = useState(false);
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
 
   // Mock wallet data
   const walletData = {
@@ -90,9 +93,23 @@ export default function WalletPage() {
     return txn.type === activeFilter;
   });
 
+  // Pagination
+  const {
+    currentPage,
+    pageSize,
+    paginatedItems,
+    totalItems,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePagination(filteredTransactions, {
+    initialPageSize: 10,
+    persistInUrl: true,
+  });
+
   return (
     <>
-      <Container>
+      <PullToRefresh onRefresh={handleRefresh}>
+        <Container>
         <Section>
           <PageHeader
             title="Wallet"
@@ -121,9 +138,19 @@ export default function WalletPage() {
         </Section>
 
         <Section spacing="sm">
-          <TransactionList transactions={filteredTransactions} />
+          <TransactionList transactions={paginatedItems} />
+          
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            pageSizeOptions={[10, 25, 50]}
+          />
         </Section>
       </Container>
+      </PullToRefresh>
 
       {/* Cashout Modal */}
       <CashoutModal

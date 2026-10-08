@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { UserPlus } from 'lucide-react'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Container } from '@/components/layout/Container'
 import { Button } from '@/components/ui/Button'
+import { Pagination } from '@/components/ui'
+import { usePagination } from '@/hooks/usePagination'
 import {
   UserTable,
   KycVerificationModal,
@@ -214,6 +216,19 @@ export default function UsersPage() {
 
   const selectedUser = selectedUserId ? users.find((u) => u.id === selectedUserId) : null
 
+  // Pagination
+  const {
+    currentPage,
+    pageSize,
+    paginatedItems: paginatedUsers,
+    totalItems,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePagination(users, {
+    initialPageSize: 10,
+    persistInUrl: true,
+  })
+
   const handleViewUser = (userId: string) => {
     setSelectedUserId(userId)
     setShowDetailModal(true)
@@ -287,11 +302,21 @@ export default function UsersPage() {
 
         {/* User Table */}
         <UserTable
-          users={users}
+          users={paginatedUsers}
           onViewUser={handleViewUser}
           onEditUser={handleEditUser}
           onSuspendUser={handleSuspendUser}
           onDeleteUser={handleDeleteUser}
+        />
+
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalItems={totalItems}
+          pageSize={pageSize}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+          pageSizeOptions={[10, 25, 50]}
         />
       </div>
 
