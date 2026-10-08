@@ -97,6 +97,14 @@ export default function CollectionsPage() {
   const [selectedMaterials, setSelectedMaterials] = useState<MaterialType[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [selectedCollection, setSelectedCollection] = useState<WasteSubmission | null>(null);
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+
+  const handleRefresh = async () => {
+    // Simulate data fetching
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setLastRefresh(new Date());
+    // In production, refetch collections data
+  };
 
   // Filter and sort collections
   const filteredAndSortedCollections = useMemo(() => {
@@ -162,7 +170,8 @@ export default function CollectionsPage() {
   ];
 
   return (
-    <Container>
+    <PullToRefresh onRefresh={handleRefresh}>
+      <Container>
       <Section>
         <PageHeader
           title="My Collections"
@@ -278,5 +287,6 @@ export default function CollectionsPage() {
         />
       )}
     </Container>
+    </PullToRefresh>
   );
 }

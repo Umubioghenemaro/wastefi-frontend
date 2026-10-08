@@ -78,6 +78,7 @@ const mockTransactions: Transaction[] = [
 export default function WalletPage() {
   const [activeFilter, setActiveFilter] = useState<TransactionFilterType>("all");
   const [isCashoutModalOpen, setIsCashoutModalOpen] = useState(false);
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
 
   // Mock wallet data
   const walletData = {
@@ -107,7 +108,8 @@ export default function WalletPage() {
 
   return (
     <>
-      <Container>
+      <PullToRefresh onRefresh={handleRefresh}>
+        <Container>
         <Section>
           <PageHeader
             title="Wallet"
@@ -148,6 +150,7 @@ export default function WalletPage() {
           />
         </Section>
       </Container>
+      </PullToRefresh>
 
       {/* Cashout Modal */}
       <CashoutModal

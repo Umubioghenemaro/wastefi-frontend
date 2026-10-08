@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { X, Loader2 } from "lucide-react";
-import { Button, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle, FormError } from "@/components/ui";
 import type { User } from "@/types/api";
 
 /**
@@ -14,9 +14,20 @@ import type { User } from "@/types/api";
  */
 
 const profileSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address").optional().or(z.literal("")),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  name: z.string()
+    .min(1, "Full name is required")
+    .min(2, "Name must be at least 2 characters long")
+    .max(100, "Name must not exceed 100 characters"),
+  email: z.string()
+    .optional()
+    .or(z.literal(""))
+    .refine((val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+      message: "Please enter a valid email address",
+    }),
+  phone: z.string()
+    .min(1, "Phone number is required")
+    .min(10, "Phone number must be at least 10 digits")
+    .regex(/^[+\d\s()-]+$/, "Please enter a valid phone number"),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -81,13 +92,17 @@ export function EditProfileModal({ user, onClose, onSave }: EditProfileModalProp
               <input
                 {...register("name")}
                 type="text"
-                className="w-full h-12 px-4 rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className={`w-full h-12 px-4 rounded-md border ${
+                  errors.name 
+                    ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                    : "border-[var(--border)] focus:ring-[var(--primary)]"
+                } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
                 placeholder="Enter your full name"
+                aria-invalid={errors.name ? "true" : "false"}
+                aria-describedby={errors.name ? "name-error" : undefined}
               />
               {errors.name && (
-                <p className="text-sm text-[var(--error)] mt-1">
-                  {errors.name.message}
-                </p>
+                <FormError message={errors.name.message} id="name-error" />
               )}
             </div>
 
@@ -97,13 +112,17 @@ export function EditProfileModal({ user, onClose, onSave }: EditProfileModalProp
               <input
                 {...register("email")}
                 type="email"
-                className="w-full h-12 px-4 rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className={`w-full h-12 px-4 rounded-md border ${
+                  errors.email 
+                    ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                    : "border-[var(--border)] focus:ring-[var(--primary)]"
+                } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
                 placeholder="Enter your email (optional)"
+                aria-invalid={errors.email ? "true" : "false"}
+                aria-describedby={errors.email ? "email-error" : undefined}
               />
               {errors.email && (
-                <p className="text-sm text-[var(--error)] mt-1">
-                  {errors.email.message}
-                </p>
+                <FormError message={errors.email.message} id="email-error" />
               )}
             </div>
 
@@ -115,13 +134,17 @@ export function EditProfileModal({ user, onClose, onSave }: EditProfileModalProp
               <input
                 {...register("phone")}
                 type="tel"
-                className="w-full h-12 px-4 rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className={`w-full h-12 px-4 rounded-md border ${
+                  errors.phone 
+                    ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                    : "border-[var(--border)] focus:ring-[var(--primary)]"
+                } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
                 placeholder="Enter your phone number"
+                aria-invalid={errors.phone ? "true" : "false"}
+                aria-describedby={errors.phone ? "phone-error" : undefined}
               />
               {errors.phone && (
-                <p className="text-sm text-[var(--error)] mt-1">
-                  {errors.phone.message}
-                </p>
+                <FormError message={errors.phone.message} id="phone-error" />
               )}
               <p className="text-xs text-[var(--muted-foreground)] mt-1">
                 Used for account verification
