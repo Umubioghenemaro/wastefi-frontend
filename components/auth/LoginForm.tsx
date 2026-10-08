@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle, FormError } from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { Phone, Lock } from "lucide-react";
@@ -89,11 +89,17 @@ export function LoginForm() {
                 {...register("phone")}
                 type="tel"
                 placeholder="Phone Number (+1234567890)"
-                className="w-full h-12 pl-11 pr-4 rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className={`w-full h-12 pl-11 pr-4 rounded-md border ${
+                  errors.phone 
+                    ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                    : "border-[var(--border)] focus:ring-[var(--primary)]"
+                } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
+                aria-invalid={errors.phone ? "true" : "false"}
+                aria-describedby={errors.phone ? "phone-error" : undefined}
               />
             </div>
             {errors.phone && (
-              <p className="text-sm text-[var(--error)] mt-1">{errors.phone.message}</p>
+              <FormError message={errors.phone.message} id="phone-error" />
             )}
           </div>
 
@@ -105,11 +111,17 @@ export function LoginForm() {
                 {...register("password")}
                 type="password"
                 placeholder="Password"
-                className="w-full h-12 pl-11 pr-4 rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className={`w-full h-12 pl-11 pr-4 rounded-md border ${
+                  errors.password 
+                    ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                    : "border-[var(--border)] focus:ring-[var(--primary)]"
+                } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
+                aria-invalid={errors.password ? "true" : "false"}
+                aria-describedby={errors.password ? "password-error" : undefined}
               />
             </div>
             {errors.password && (
-              <p className="text-sm text-[var(--error)] mt-1">{errors.password.message}</p>
+              <FormError message={errors.password.message} id="password-error" />
             )}
           </div>
 

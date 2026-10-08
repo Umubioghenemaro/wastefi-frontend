@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle, FormError } from "@/components/ui";
 import { MaterialTypeSelector, materials } from "./MaterialTypeSelector";
 import { ImagePreview } from "./ImagePreview";
 import { CameraCapture } from "./CameraCapture";
@@ -21,10 +21,19 @@ import type { MaterialType } from "@/types/api";
  */
 
 const submissionSchema = z.object({
-  materialType: z.string().min(1, "Please select a material type"),
-  weight: z.number().min(0.1, "Weight must be at least 0.1 kg"),
-  collectionPointId: z.string().min(1, "Please select a collection point"),
-  photos: z.array(z.string()).min(1, "Please add at least one photo").max(5, "Maximum 5 photos allowed"),
+  materialType: z.string()
+    .min(1, "Please select a material type for your waste submission"),
+  weight: z.number({
+    required_error: "Weight is required",
+    invalid_type_error: "Please enter a valid weight",
+  })
+    .min(0.1, "Weight must be at least 0.1 kg")
+    .max(1000, "Weight cannot exceed 1000 kg per submission"),
+  collectionPointId: z.string()
+    .min(1, "Please select a collection point"),
+  photos: z.array(z.string())
+    .min(1, "Please add at least one photo of your waste collection")
+    .max(5, "You can upload a maximum of 5 photos"),
 });
 
 type SubmissionFormData = z.infer<typeof submissionSchema>;
@@ -138,9 +147,7 @@ export function WasteSubmissionForm() {
               onSelect={handleMaterialSelect}
             />
             {errors.materialType && (
-              <p className="text-sm text-[var(--error)] mt-2">
-                {errors.materialType.message}
-              </p>
+              <FormError message={errors.materialType.message} className="mt-2" />
             )}
           </CardContent>
         </Card>
@@ -158,16 +165,20 @@ export function WasteSubmissionForm() {
                 type="number"
                 step="0.1"
                 placeholder="0.0"
-                className="w-full h-14 pl-12 pr-16 text-lg font-semibold rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className={`w-full h-14 pl-12 pr-16 text-lg font-semibold rounded-md border ${
+                  errors.weight 
+                    ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                    : "border-[var(--border)] focus:ring-[var(--primary)]"
+                } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
+                aria-invalid={errors.weight ? "true" : "false"}
+                aria-describedby={errors.weight ? "weight-error" : undefined}
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] font-medium">
                 kg
               </span>
             </div>
             {errors.weight && (
-              <p className="text-sm text-[var(--error)] mt-2">
-                {errors.weight.message}
-              </p>
+              <FormError message={errors.weight.message} id="weight-error" />
             )}
 
             {/* Estimated Value */}
@@ -209,9 +220,7 @@ export function WasteSubmissionForm() {
             )}
 
             {errors.photos && (
-              <p className="text-sm text-[var(--error)]">
-                {errors.photos.message}
-              </p>
+              <FormError message={errors.photos.message} />
             )}
           </CardContent>
         </Card>

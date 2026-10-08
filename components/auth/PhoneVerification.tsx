@@ -73,7 +73,7 @@ export function PhoneVerification({ phoneNumber }: PhoneVerificationProps) {
     const otpValue = otp.join("");
     
     if (otpValue.length !== 6) {
-      setError("Please enter all 6 digits");
+      setError("Please enter all 6 digits of the verification code");
       return;
     }
 
@@ -87,7 +87,7 @@ export function PhoneVerification({ phoneNumber }: PhoneVerificationProps) {
       // Navigate to terms
       router.push("/terms");
     } catch (err) {
-      setError("Invalid verification code. Please try again.");
+      setError("The verification code is incorrect. Please check and try again.");
     } finally {
       setIsLoading(false);
     }
