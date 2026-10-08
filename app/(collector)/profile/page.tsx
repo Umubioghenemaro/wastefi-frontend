@@ -13,6 +13,7 @@ import {
 } from "@/components/profile";
 import { useAuthStore } from "@/store/authStore";
 import { useUIStore } from "@/store/uiStore";
+import { useToast } from "@/lib/hooks/useToast";
 import { useRouter } from "next/navigation";
 import type { User } from "@/types/api";
 
@@ -26,6 +27,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
   const addToast = useUIStore((state) => state.addToast);
+  const toast = useToast();
 
   // Mock user data - Replace with real data from auth store
   const mockUser: User = {
@@ -50,15 +52,18 @@ export default function ProfilePage() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     console.log("Saving profile:", data);
+    toast.success("Profile updated successfully", "Profile Updated");
     addToast("Profile updated successfully", "success");
   };
 
   const handleAvatarChange = () => {
+    toast.info("Avatar upload coming soon", "Coming Soon");
     addToast("Avatar upload coming soon", "info");
   };
 
   const handleLogout = () => {
     logout();
+    toast.success("Logged out successfully", "Logged Out");
     addToast("Logged out successfully", "success");
     router.push("/login");
   };
