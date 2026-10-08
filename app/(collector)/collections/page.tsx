@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
@@ -10,6 +10,7 @@ import {
   CollectionFilter,
   CollectionDetail,
 } from "@/components/collections";
+import { CollectionsSkeleton } from "@/components/skeletons";
 import { Package, ArrowUpDown } from "lucide-react";
 import type { WasteSubmission, CollectionStatus, MaterialType } from "@/types/api";
 
@@ -96,6 +97,16 @@ export default function CollectionsPage() {
   const [selectedMaterials, setSelectedMaterials] = useState<MaterialType[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [selectedCollection, setSelectedCollection] = useState<WasteSubmission | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate data loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Filter and sort collections
   const filteredAndSortedCollections = useMemo(() => {
@@ -147,8 +158,13 @@ export default function CollectionsPage() {
     { value: "lowest", label: "Lowest Value" },
   ];
 
+  if (isLoading) {
+    return <CollectionsSkeleton />;
+  }
+
   return (
-    <Container>
+    <div className="animate-fade-in">
+      <Container>
       <Section>
         <PageHeader
           title="My Collections"
@@ -243,14 +259,16 @@ export default function CollectionsPage() {
           </Card>
         )}
       </Section>
-
-      {/* Collection Detail Modal */}
+      </Container>
+    </div>
+  );
+}
       {selectedCollection && (
         <CollectionDetail
           collection={selectedCollection}
           onClose={() => setSelectedCollection(null)}
         />
       )}
-    </Container>
+    </div>
   );
 }

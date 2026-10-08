@@ -2,6 +2,15 @@
 
 All notable changes to the WasteFi Frontend project.
 
+## [Unreleased]
+
+### ✨ Added
+- **Loading Skeleton Screens**: Implemented skeleton screens for dashboard, wallet, and collections pages for improved perceived performance
+  - Created base `Skeleton` component with variants (Text, Card, Avatar, Button)
+  - Added page-specific skeletons matching actual content layout
+  - Integrated smooth fade-in transitions from skeleton to real content
+  - Optimized for mobile and slow network connections
+
 ## [1.0.0] - 2024-02-15
 
 ### 🎉 Initial Production Release

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
@@ -8,6 +8,7 @@ import { WalletBalanceCard } from "@/components/wallet/WalletBalanceCard";
 import { TransactionList } from "@/components/wallet/TransactionList";
 import { TransactionFilter, TransactionFilterType } from "@/components/wallet/TransactionFilter";
 import { CashoutModal } from "@/components/wallet/CashoutModal";
+import { WalletSkeleton } from "@/components/skeletons";
 import type { Transaction } from "@/types/api";
 
 /**
@@ -76,6 +77,16 @@ const mockTransactions: Transaction[] = [
 export default function WalletPage() {
   const [activeFilter, setActiveFilter] = useState<TransactionFilterType>("all");
   const [isCashoutModalOpen, setIsCashoutModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate data loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Mock wallet data
   const walletData = {
@@ -90,9 +101,14 @@ export default function WalletPage() {
     return txn.type === activeFilter;
   });
 
+  if (isLoading) {
+    return <WalletSkeleton />;
+  }
+
   return (
     <>
-      <Container>
+      <div className="animate-fade-in">
+        <Container>
         <Section>
           <PageHeader
             title="Wallet"
@@ -124,6 +140,7 @@ export default function WalletPage() {
           <TransactionList transactions={filteredTransactions} />
         </Section>
       </Container>
+      </div>
 
       {/* Cashout Modal */}
       <CashoutModal
