@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
-import { Card, CardContent, Button } from "@/components/ui";
+import { Card, CardContent, Button, PullToRefresh } from "@/components/ui";
 import {
   CollectionCard,
   CollectionFilter,
@@ -96,6 +96,14 @@ export default function CollectionsPage() {
   const [selectedMaterials, setSelectedMaterials] = useState<MaterialType[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [selectedCollection, setSelectedCollection] = useState<WasteSubmission | null>(null);
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+
+  const handleRefresh = async () => {
+    // Simulate data fetching
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setLastRefresh(new Date());
+    // In production, refetch collections data
+  };
 
   // Filter and sort collections
   const filteredAndSortedCollections = useMemo(() => {
@@ -148,7 +156,8 @@ export default function CollectionsPage() {
   ];
 
   return (
-    <Container>
+    <PullToRefresh onRefresh={handleRefresh}>
+      <Container>
       <Section>
         <PageHeader
           title="My Collections"
@@ -252,5 +261,6 @@ export default function CollectionsPage() {
         />
       )}
     </Container>
+    </PullToRefresh>
   );
 }
