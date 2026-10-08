@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button, Card, Badge } from "@/components/ui";
+import { Button, Card, Badge, FormError } from "@/components/ui";
 import { X, Smartphone, Wallet, Building2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { useToast } from "@/lib/hooks/useToast";
@@ -15,9 +15,18 @@ import { useToast } from "@/lib/hooks/useToast";
  */
 
 const cashoutSchema = z.object({
-  amount: z.number().min(1, "Amount must be greater than 0"),
-  method: z.enum(["mobile_money", "stellar", "bank"]),
-  destination: z.string().min(1, "Destination is required"),
+  amount: z.number({
+    required_error: "Amount is required",
+    invalid_type_error: "Please enter a valid amount",
+  })
+    .min(1, "Amount must be greater than $0")
+    .max(10000, "Amount cannot exceed $10,000 per transaction"),
+  method: z.enum(["mobile_money", "stellar", "bank"], {
+    required_error: "Please select a payment method",
+  }),
+  destination: z.string()
+    .min(1, "Destination is required")
+    .min(5, "Please enter a valid destination address"),
 });
 
 type CashoutFormData = z.infer<typeof cashoutSchema>;
@@ -133,13 +142,17 @@ export function CashoutModal({
                   type="number"
                   step="0.01"
                   placeholder="0.00"
-                  className="w-full h-14 pl-8 pr-4 text-lg font-semibold rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                  className={`w-full h-14 pl-8 pr-4 text-lg font-semibold rounded-md border ${
+                    errors.amount 
+                      ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                      : "border-[var(--border)] focus:ring-[var(--primary)]"
+                  } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
+                  aria-invalid={errors.amount ? "true" : "false"}
+                  aria-describedby={errors.amount ? "amount-error" : undefined}
                 />
               </div>
               {errors.amount && (
-                <p className="text-sm text-[var(--error)] mt-1">
-                  {errors.amount.message}
-                </p>
+                <FormError message={errors.amount.message} id="amount-error" />
               )}
               <div className="flex gap-2 mt-2">
                 {[25, 50, 100].map((preset) => (
@@ -211,12 +224,16 @@ export function CashoutModal({
                 placeholder={
                   methods.find((m) => m.id === selectedMethod)?.placeholder
                 }
-                className="w-full h-12 px-4 rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className={`w-full h-12 px-4 rounded-md border ${
+                  errors.destination 
+                    ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                    : "border-[var(--border)] focus:ring-[var(--primary)]"
+                } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
+                aria-invalid={errors.destination ? "true" : "false"}
+                aria-describedby={errors.destination ? "destination-error" : undefined}
               />
               {errors.destination && (
-                <p className="text-sm text-[var(--error)] mt-1">
-                  {errors.destination.message}
-                </p>
+                <FormError message={errors.destination.message} id="destination-error" />
               )}
             </div>
 
