@@ -20,3 +20,5 @@ export type { InputProps } from "./Input";
 
 export { Badge, badgeVariants } from "./Badge";
 export type { BadgeProps } from "./Badge";
+
+export { PullToRefresh } from "./PullToRefresh";

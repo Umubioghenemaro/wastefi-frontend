@@ -15,8 +15,12 @@ import { Phone, Lock } from "lucide-react";
  */
 
 const loginSchema = z.object({
-  phone: z.string().regex(/^\+?[1-9]\d{9,14}$/, "Invalid phone number"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  phone: z.string()
+    .min(1, "Phone number is required")
+    .regex(/^\+?[1-9]\d{9,14}$/, "Please enter a valid phone number (e.g., +1234567890)"),
+  password: z.string()
+    .min(1, "Password is required")
+    .min(6, "Password must be at least 6 characters long"),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;

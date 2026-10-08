@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
@@ -9,17 +12,28 @@ import {
   CardTitle,
   Badge,
   Button,
+  PullToRefresh,
 } from "@/components/ui";
 import { Leaf, TrendingUp, Recycle, Plus } from "lucide-react";
 
 /**
  * Collector Dashboard (Enhanced)
- * Main dashboard for waste collectors
+ * Main dashboard for waste collectors with pull-to-refresh
  */
 
 export default function CollectorDashboardPage() {
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+
+  const handleRefresh = async () => {
+    // Simulate data fetching
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setLastRefresh(new Date());
+    // In production, trigger actual data refetch here
+  };
+
   return (
-    <Container>
+    <PullToRefresh onRefresh={handleRefresh}>
+      <Container>
       <Section>
         <PageHeader
           title="Dashboard"
@@ -141,5 +155,6 @@ export default function CollectorDashboardPage() {
         </Button>
       </div>
     </Container>
+    </PullToRefresh>
   );
 }

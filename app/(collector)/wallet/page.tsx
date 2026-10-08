@@ -8,6 +8,7 @@ import { WalletBalanceCard } from "@/components/wallet/WalletBalanceCard";
 import { TransactionList } from "@/components/wallet/TransactionList";
 import { TransactionFilter, TransactionFilterType } from "@/components/wallet/TransactionFilter";
 import { CashoutModal } from "@/components/wallet/CashoutModal";
+import { PullToRefresh } from "@/components/ui";
 import type { Transaction } from "@/types/api";
 
 /**
@@ -76,6 +77,7 @@ const mockTransactions: Transaction[] = [
 export default function WalletPage() {
   const [activeFilter, setActiveFilter] = useState<TransactionFilterType>("all");
   const [isCashoutModalOpen, setIsCashoutModalOpen] = useState(false);
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
 
   // Mock wallet data
   const walletData = {
@@ -90,9 +92,17 @@ export default function WalletPage() {
     return txn.type === activeFilter;
   });
 
+  const handleRefresh = async () => {
+    // Simulate data fetching
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setLastRefresh(new Date());
+    // In production, refetch wallet data and transactions
+  };
+
   return (
     <>
-      <Container>
+      <PullToRefresh onRefresh={handleRefresh}>
+        <Container>
         <Section>
           <PageHeader
             title="Wallet"
@@ -124,6 +134,7 @@ export default function WalletPage() {
           <TransactionList transactions={filteredTransactions} />
         </Section>
       </Container>
+      </PullToRefresh>
 
       {/* Cashout Modal */}
       <CashoutModal
