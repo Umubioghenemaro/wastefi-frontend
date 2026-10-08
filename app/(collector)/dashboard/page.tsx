@@ -12,13 +12,14 @@ import {
   CardTitle,
   Badge,
   Button,
+  PullToRefresh,
 } from "@/components/ui";
 import { DashboardSkeleton } from "@/components/skeletons";
 import { Leaf, TrendingUp, Recycle, Plus } from "lucide-react";
 
 /**
  * Collector Dashboard (Enhanced)
- * Main dashboard for waste collectors
+ * Main dashboard for waste collectors with pull-to-refresh
  */
 
 export default function CollectorDashboardPage() {

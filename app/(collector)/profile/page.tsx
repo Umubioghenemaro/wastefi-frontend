@@ -10,6 +10,7 @@ import {
   ProfileStats,
   EditProfileModal,
   AccountActions,
+  QRCodeCard,
 } from "@/components/profile";
 import { useAuthStore } from "@/store/authStore";
 import { useToast } from "@/lib/hooks/useToast";
@@ -90,6 +91,9 @@ export default function ProfilePage() {
 
         {/* Stats */}
         <ProfileStats stats={mockStats} />
+
+        {/* QR Code for Check-in */}
+        <QRCodeCard userId={mockUser.id} userName={mockUser.name} />
 
         {/* Account Actions */}
         <AccountActions onLogout={handleLogout} />

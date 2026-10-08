@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button, Input, Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { Button, Input, Card, CardContent, CardHeader, CardTitle, FormError } from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { User, Phone, Mail, Lock } from "lucide-react";
 
@@ -14,13 +14,28 @@ import { User, Phone, Mail, Lock } from "lucide-react";
  */
 
 const registrationSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  phone: z.string().regex(/^\+?[1-9]\d{9,14}$/, "Invalid phone number"),
-  email: z.string().email("Invalid email address").optional().or(z.literal("")),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string(),
+  name: z.string()
+    .min(1, "Full name is required")
+    .min(2, "Name must be at least 2 characters long")
+    .max(100, "Name must not exceed 100 characters"),
+  phone: z.string()
+    .min(1, "Phone number is required")
+    .regex(/^\+?[1-9]\d{9,14}$/, "Please enter a valid phone number with country code (e.g., +1234567890)"),
+  email: z.string()
+    .optional()
+    .or(z.literal(""))
+    .refine((val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+      message: "Please enter a valid email address",
+    }),
+  password: z.string()
+    .min(1, "Password is required")
+    .min(6, "Password must be at least 6 characters long")
+    .regex(/[a-zA-Z]/, "Password must contain at least one letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
+  confirmPassword: z.string()
+    .min(1, "Please confirm your password"),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "Passwords do not match. Please try again.",
   path: ["confirmPassword"],
 });
 
@@ -70,11 +85,17 @@ export function RegistrationForm() {
                 {...register("name")}
                 type="text"
                 placeholder="Full Name"
-                className="w-full h-12 pl-11 pr-4 rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className={`w-full h-12 pl-11 pr-4 rounded-md border ${
+                  errors.name 
+                    ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                    : "border-[var(--border)] focus:ring-[var(--primary)]"
+                } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
+                aria-invalid={errors.name ? "true" : "false"}
+                aria-describedby={errors.name ? "name-error" : undefined}
               />
             </div>
             {errors.name && (
-              <p className="text-sm text-[var(--error)] mt-1">{errors.name.message}</p>
+              <FormError message={errors.name.message} id="name-error" />
             )}
           </div>
 
@@ -86,11 +107,17 @@ export function RegistrationForm() {
                 {...register("phone")}
                 type="tel"
                 placeholder="Phone Number (+1234567890)"
-                className="w-full h-12 pl-11 pr-4 rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className={`w-full h-12 pl-11 pr-4 rounded-md border ${
+                  errors.phone 
+                    ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                    : "border-[var(--border)] focus:ring-[var(--primary)]"
+                } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
+                aria-invalid={errors.phone ? "true" : "false"}
+                aria-describedby={errors.phone ? "phone-error" : undefined}
               />
             </div>
             {errors.phone && (
-              <p className="text-sm text-[var(--error)] mt-1">{errors.phone.message}</p>
+              <FormError message={errors.phone.message} id="phone-error" />
             )}
           </div>
 
@@ -102,11 +129,17 @@ export function RegistrationForm() {
                 {...register("email")}
                 type="email"
                 placeholder="Email (Optional)"
-                className="w-full h-12 pl-11 pr-4 rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className={`w-full h-12 pl-11 pr-4 rounded-md border ${
+                  errors.email 
+                    ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                    : "border-[var(--border)] focus:ring-[var(--primary)]"
+                } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
+                aria-invalid={errors.email ? "true" : "false"}
+                aria-describedby={errors.email ? "email-error" : undefined}
               />
             </div>
             {errors.email && (
-              <p className="text-sm text-[var(--error)] mt-1">{errors.email.message}</p>
+              <FormError message={errors.email.message} id="email-error" />
             )}
           </div>
 
@@ -118,11 +151,17 @@ export function RegistrationForm() {
                 {...register("password")}
                 type="password"
                 placeholder="Password"
-                className="w-full h-12 pl-11 pr-4 rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className={`w-full h-12 pl-11 pr-4 rounded-md border ${
+                  errors.password 
+                    ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                    : "border-[var(--border)] focus:ring-[var(--primary)]"
+                } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
+                aria-invalid={errors.password ? "true" : "false"}
+                aria-describedby={errors.password ? "password-error" : undefined}
               />
             </div>
             {errors.password && (
-              <p className="text-sm text-[var(--error)] mt-1">{errors.password.message}</p>
+              <FormError message={errors.password.message} id="password-error" />
             )}
           </div>
 
@@ -134,11 +173,17 @@ export function RegistrationForm() {
                 {...register("confirmPassword")}
                 type="password"
                 placeholder="Confirm Password"
-                className="w-full h-12 pl-11 pr-4 rounded-md border border-[var(--border)] bg-[var(--background)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className={`w-full h-12 pl-11 pr-4 rounded-md border ${
+                  errors.confirmPassword 
+                    ? "border-[var(--error)] focus:ring-[var(--error)]" 
+                    : "border-[var(--border)] focus:ring-[var(--primary)]"
+                } bg-[var(--background)] focus:ring-2 focus:border-transparent outline-none`}
+                aria-invalid={errors.confirmPassword ? "true" : "false"}
+                aria-describedby={errors.confirmPassword ? "confirm-password-error" : undefined}
               />
             </div>
             {errors.confirmPassword && (
-              <p className="text-sm text-[var(--error)] mt-1">{errors.confirmPassword.message}</p>
+              <FormError message={errors.confirmPassword.message} id="confirm-password-error" />
             )}
           </div>
 

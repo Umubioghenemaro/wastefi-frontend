@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Container } from "@/components/layout/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Section } from "@/components/layout/Section";
+import { Pagination } from "@/components/ui";
 import { WalletBalanceCard } from "@/components/wallet/WalletBalanceCard";
 import { TransactionList } from "@/components/wallet/TransactionList";
 import { TransactionFilter, TransactionFilterType } from "@/components/wallet/TransactionFilter";
@@ -137,7 +138,16 @@ export default function WalletPage() {
         </Section>
 
         <Section spacing="sm">
-          <TransactionList transactions={filteredTransactions} />
+          <TransactionList transactions={paginatedItems} />
+          
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+            pageSizeOptions={[10, 25, 50]}
+          />
         </Section>
       </Container>
       </div>
