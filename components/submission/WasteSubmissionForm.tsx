@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useOnlineStatus } from "@/lib/hooks/useOfflineStorage";
 import { savePendingSubmission, addToSyncQueue } from "@/lib/db/storage";
 import { useUIStore } from "@/store/uiStore";
+import { useToast } from "@/lib/hooks/useToast";
 import type { MaterialType } from "@/types/api";
 
 /**
@@ -46,6 +47,7 @@ export function WasteSubmissionForm() {
   const router = useRouter();
   const isOnline = useOnlineStatus();
   const addToast = useUIStore((state) => state.addToast);
+  const toast = useToast();
 
   const {
     register,
@@ -118,8 +120,10 @@ export function WasteSubmissionForm() {
 
       // Show success message
       if (isOnline) {
+        toast.success("Submission saved! Syncing now...", "Success");
         addToast("Submission saved! Syncing now...", "success");
       } else {
+        toast.info("Saved offline. Will sync when online.", "Offline Mode");
         addToast("Saved offline. Will sync when online.", "info");
       }
 
@@ -127,6 +131,7 @@ export function WasteSubmissionForm() {
       router.push("/dashboard");
     } catch (error) {
       console.error("Submission error:", error);
+      toast.error("Failed to save submission. Please try again.", "Submission Error");
       addToast("Failed to save submission. Please try again.", "error");
     } finally {
       setIsSubmitting(false);
