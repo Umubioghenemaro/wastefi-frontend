@@ -20,3 +20,6 @@ export type { InputProps } from "./Input";
 
 export { Badge, badgeVariants } from "./Badge";
 export type { BadgeProps } from "./Badge";
+
+export { Pagination } from "./Pagination";
+export type { PaginationProps } from "./Pagination";
